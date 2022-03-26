@@ -1,10 +1,9 @@
 CREATE TABLE `users` (
   `user_id` binary(16) PRIMARY KEY DEFAULT (uuid()),
-  `username` varchar(255),
   `created_at` timestamp
 );
 
-CREATE TABLE `user_group` (
+CREATE TABLE `user_groups` (
   `user_group_id` unsigned bigint PRIMARY KEY AUTO_INCREMENT,
   `group_name` varchar(255),
   `created_at` timestamp
@@ -48,13 +47,13 @@ CREATE TABLE `permissions_sets` (
 
 ALTER TABLE `users` ADD FOREIGN KEY (`user_id`) REFERENCES `group_members` (`user_id`);
 
-ALTER TABLE `user_group` ADD FOREIGN KEY (`user_group_id`) REFERENCES `group_members` (`user_group_id`);
+ALTER TABLE `user_groups` ADD FOREIGN KEY (`user_group_id`) REFERENCES `group_members` (`user_group_id`);
 
 ALTER TABLE `permission_set_members` ADD FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`permission_id`);
 
 ALTER TABLE `permission_set_members` ADD FOREIGN KEY (`permission_set_id`) REFERENCES `permissions_sets` (`permission_set_id`);
 
-ALTER TABLE `permission_grants` ADD FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`);
+ALTER TABLE `permission_grants` ADD FOREIGN KEY (`user_group_id`) REFERENCES `user_groups` (`user_group_id`);
 
 ALTER TABLE `permission_grants` ADD FOREIGN KEY (`permission_set_id`) REFERENCES `permissions_sets` (`permission_set_id`);
 
