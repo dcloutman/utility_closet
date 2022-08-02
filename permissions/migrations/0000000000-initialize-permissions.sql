@@ -1,59 +1,38 @@
-CREATE TABLE `users` (
-  `user_id` binary(16) PRIMARY KEY DEFAULT (uuid()),
-  `created_at` timestamp
-);
-
-CREATE TABLE `user_groups` (
-  `user_group_id` unsigned bigint PRIMARY KEY AUTO_INCREMENT,
-  `group_name` varchar(255),
-  `created_at` timestamp
-);
-
-CREATE TABLE `group_members` (
-  `user_id` binary(16),
-  `user_group_id` int,
-  `username` varchar(255),
-  `created_at` timestamp,
-  PRIMARY KEY (`user_id`, `user_group_id`)
-);
-
-CREATE TABLE `permissions` (
-  `permission_id` unsigned int PRIMARY KEY AUTO_INCREMENT,
-  `permission_token` varchar(255),
-  `title` varchar(255),
-  `notes` text
-);
-
-CREATE TABLE `permission_set_members` (
-  `permission_set_id` unsigned int,
-  `permission_id` unsigned int,
-  `permission_token` varchar(255),
-  `title` varchar(255),
-  `notes` text,
-  PRIMARY KEY (`permission_set_id`, `permission_id`)
-);
-
-CREATE TABLE `permission_grants` (
-  `user_group_id` unsigned int,
-  `permission_set_id` unsigned int,
-  PRIMARY KEY (`user_group_id`, `permission_set_id`)
-);
-
-CREATE TABLE `permissions_sets` (
-  `permission_set_id` unsigned int PRIMARY KEY,
-  `name` varchar(255),
-  `notes` text
-);
-
-ALTER TABLE `users` ADD FOREIGN KEY (`user_id`) REFERENCES `group_members` (`user_id`);
-
-ALTER TABLE `user_groups` ADD FOREIGN KEY (`user_group_id`) REFERENCES `group_members` (`user_group_id`);
-
-ALTER TABLE `permission_set_members` ADD FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`permission_id`);
-
-ALTER TABLE `permission_set_members` ADD FOREIGN KEY (`permission_set_id`) REFERENCES `permissions_sets` (`permission_set_id`);
-
-ALTER TABLE `permission_grants` ADD FOREIGN KEY (`user_group_id`) REFERENCES `user_groups` (`user_group_id`);
-
-ALTER TABLE `permission_grants` ADD FOREIGN KEY (`permission_set_id`) REFERENCES `permissions_sets` (`permission_set_id`);
-
+CREATE TABLE `Users` (
+ `user_id` BINARY(16) PRIMARY KEY DEFAULT (uuid()),
+ `name` VARCHAR(1024),
+ `ldap_username` VARCHAR(512) NOT NULL,
+ `created_at` DATETIME
+) COMMENT="Associates a login name with an internal unique identifier.";
+ 
+ 
+CREATE TABLE `UserGroups` (
+ `user_group_id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+ `group_name` VARCHAR(256),
+ `description` TEXT,
+ `created_at` DATETIME
+) COMMENT="Master records for user groups that can associate multiple users with and individual permission or set of permissions.";
+ 
+ 
+CREATE TABLE `GroupMembers` (
+ `user_id` BINARY(16),
+ `user_group_id` BIGINT UNSIGNED,
+ `username` VARCHAR(256),
+ `created_at` DATETIME,
+ PRIMARY KEY (`user_id`, `user_group_id`),
+ CONSTRAINT `FK1_user`
+   FOREIGN KEY (`user_id`)
+   REFERENCES `Users`(`user_id`),
+ CONSTRAINT `FK1_user_group`
+   FOREIGN KEY (`user_group_id`)
+   REFERENCES `UserGroups`(`user_group_id`)
+) COMMENT="An entity that allows multiple groups to have multiple users and users to have multiple groups.";
+ 
+ 
+ 
+CREATE TABLE `Permissions` (
+ `permission_id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+ `permission_token` VARCHAR(256),
+ `title` VARCHAR(256),
+ `notes` TEXT
+) COMMENT="A permission is a token (e.g. a string) that can be used programmatically to limit or constrain an application's behavior based on a user's association or non-association.";
