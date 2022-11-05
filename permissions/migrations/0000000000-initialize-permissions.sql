@@ -1,6 +1,6 @@
-CREATE DATABASE `KuiperTestDataPortal` CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin';
+CREATE DATABASE `YourUtilituClosetDatabaseName` CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin';
 
-USE `KuiperTestDataPortal`;
+USE `YourUtilityClosetDatabaseName`;
 
 -- Authorization and Authentication --
 
